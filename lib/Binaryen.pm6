@@ -1,6 +1,7 @@
 unit module Binaryen;
 use NativeCall;
-my sub binaryen { "/usr/local/src/binaryen/lib/libbinaryen.so" }
+my sub binaryen { "/usr/local/lib/libbinaryen.so" }
+my sub binaryen-constants { "/usr/local/lib/libbinaryen-constants.so" }
 
 our constant Index := uint32;
 our constant Type  := uint32;
@@ -25,24 +26,6 @@ our sub AddFunctionType(
     CArray[Type],
     Index $numParams
 ) returns FunctionTypeRef is symbol<BinaryenAddFunctionType> is native(&binaryen) {*}
-
-class Literal is repr('CStruct') {
-    class Value is repr('CUnion') {
-        has int32 $.i32;
-        has int64 $.i64;
-        has num32 $.f32;
-        has num64 $.f64;
-    }
-    has int32 $.type;
-    has Value $.value;
-
-    our Literal sub Int32(int32) is symbol<LiteralInt32> is native(&binaryen) {*}
-    our Literal sub Int64(int64) is symbol<LiteralInt64> is native(&binaryen) {*}
-    our Literal sub Float32(num32) is symbol<LiteralFloat32> is native(&binaryen) {*}
-    our Literal sub Float64(num64) is symbol<LiteralFloat64> is native(&binaryen) {*}
-    our Literal sub Float32Bits(int32) is symbol<LiteralFloat32Bits> is native(&binaryen) {*}
-    our Literal sub Float64Bits(num64) is symbol<LiteralFloat64Bits> is native(&binaryen) {*}
-}
 
 our constant Op := int32;
 
@@ -194,7 +177,16 @@ our ExpressionRef sub TeeLocal(ModuleRef, Index, ExpressionRef $value) is symbol
 our ExpressionRef sub Load(ModuleRef, uint32 $bytes, int8 $signed, uint32 $offset, uint32 $align, Type, ExpressionRef $ptr) is symbol<BinaryenLoad> is native(&binaryen) {*}
 
 our ExpressionRef sub Store(ModuleRef, uint32 $bytes, uint32 $offset, uint32 $align, ExpressionRef $ptr, ExpressionRef $value, Type) is symbol<BinaryenStore> is native(&binaryen) {*}
-our ExpressionRef sub Const(ModuleRef, Literal $value) is symbol<BinaryenConst> is native(&binaryen) {*}
+
+our package Const {
+    our ExpressionRef sub FromInt32(ModuleRef, int32) is symbol<BinaryenConstFromInt32> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromInt64(ModuleRef, int64) is symbol<BinaryenConstFromInt64> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromFloat32(ModuleRef, num32) is symbol<BinaryenConstFromFloat32> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromFloat64(ModuleRef, num64) is symbol<BinaryenConstFromFloat64> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromFloat32Bits(ModuleRef, num32) is symbol<BinaryenConstFromFloat32Bits> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromFloat64Bits(ModuleRef, num64) is symbol<BinaryenConstFromFloat64Bits> is native(&binaryen-constants) {*}
+}
+
 our ExpressionRef sub Unary(ModuleRef, Op, ExpressionRef $value) is symbol<BinaryenUnary> is native(&binaryen) {*}
 our ExpressionRef sub Binary(ModuleRef, Op, ExpressionRef $left, ExpressionRef $right) is symbol<BinaryenBinary> is native(&binaryen) {*}
 our ExpressionRef sub Select(ModuleRef, ExpressionRef $condition, ExpressionRef $ifTrue, ExpressionRef $ifFalse) is symbol<BinaryenSelect> is native(&binaryen) {*}
