@@ -6,26 +6,26 @@ my sub binaryen-constants { "/usr/local/lib/libbinaryen-constants.so" }
 our constant Index := uint32;
 our constant Type  := uint32;
 
-our sub None    returns Type is symbol<BinaryenNone> is native(&binaryen) {*}
-our sub Int32   returns Type is symbol<BinaryenInt32> is native(&binaryen) {*}
-our sub Int64   returns Type is symbol<BinaryenInt64> is native(&binaryen) {*}
-our sub Float32 returns Type is symbol<BinaryenFloat32> is native(&binaryen) {*}
-our sub Float64 returns Type is symbol<BinaryenFloat64> is native(&binaryen) {*}
+our Type sub None    is symbol<BinaryenNone> is native(&binaryen) {*}
+our Type sub Int32   is symbol<BinaryenInt32> is native(&binaryen) {*}
+our Type sub Int64   is symbol<BinaryenInt64> is native(&binaryen) {*}
+our Type sub Float32 is symbol<BinaryenFloat32> is native(&binaryen) {*}
+our Type sub Float64 is symbol<BinaryenFloat64> is native(&binaryen) {*}
 
 our constant ModuleRef := Pointer;
 
-our sub ModuleCreate returns ModuleRef is symbol<BinaryenModuleCreate> is native(&binaryen) {*}
+our ModuleRef sub ModuleCreate is symbol<BinaryenModuleCreate> is native(&binaryen) {*}
 our sub ModuleDispose(ModuleRef $) is symbol<BinaryenModuleDispose> is native(&binaryen) {*}
 
 our constant FunctionTypeRef := Pointer;
 
-our sub AddFunctionType(
+our FunctionTypeRef sub AddFunctionType(
     ModuleRef $module,
     Str $name,
     Type $result,
     CArray[Type],
     Index $numParams
-) returns FunctionTypeRef is symbol<BinaryenAddFunctionType> is native(&binaryen) {*}
+) is symbol<BinaryenAddFunctionType> is native(&binaryen) {*}
 
 our constant Op := int32;
 
