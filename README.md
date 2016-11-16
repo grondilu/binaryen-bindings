@@ -3,21 +3,22 @@ NativeCall bindings for the C binaryen API
 
 This module is a Perl 6 raw interface to the [C Binaryen API](https://github.com/WebAssembly/binaryen.git).
 
+## Requirements
 
-## Constants work-around
+This modules requires the binaryen shared library file `libbinaryen.so` to be in /usr/local/lib
 
-Dealing with functions passing and returning `struct` by value is difficult 
-with NativeCall.  Possibly [even impossible](https://irclog.perlgeek.de/perl6/2016-11-13#i_13558596)
+It also requires the small C wrapper file `utils.c` to be compiled and linked
+into a share library in /usr/local/lib as well.  This file is used to wrap
+functions that were difficult to adapt to NativeCall.
 
-As a work around, a small C wrapper is provided.  They take a numeric value
-as input and return a `BinaryenConst`, encapsulating the use of `BinaryenLiteral`.
+Compiling this file requires an access to binaryen source code,
+here in a directory called `$binaryen`, and could be done with the 
+following commands:
 
-This wrapper can be compiled as such:
+    $ gcc -I$binaryen/src -c -Wall -Werror -fpic utils.c
+    $ gcc -Wl,-R,/usr/local/lib -shared -o utils.so utils.o -lbinaryen
+    $ mv utils.so /usr/local/lib/libbinaryen-bindings-utils.so
 
-    $ gcc -I$binaryen/src -c -Wall -Werror -fpic -lbinaryen binaryen-constants.c
-    $ gcc -Wl,-R,/usr/local/lib -shared -o libbinaryen-constants.so binaryen-constants.o -lbinaryen
 
-`$binaryen` is the path of your binaryen directory.
-Then put libbinaryen-constants.so in /usr/local/lib, where the Perl 6 module will expect to find it.
 
 

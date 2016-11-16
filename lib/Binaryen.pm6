@@ -1,7 +1,7 @@
 unit module Binaryen;
 use NativeCall;
 my sub binaryen { "/usr/local/lib/libbinaryen.so" }
-my sub binaryen-constants { "/usr/local/lib/libbinaryen-constants.so" }
+my sub binaryen-utils { "/usr/local/lib/libbinaryen-utils.so" }
 
 our constant Index := uint32;
 our constant Type  := uint32;
@@ -179,12 +179,12 @@ our ExpressionRef sub Load(ModuleRef, uint32 $bytes, int8 $signed, uint32 $offse
 our ExpressionRef sub Store(ModuleRef, uint32 $bytes, uint32 $offset, uint32 $align, ExpressionRef $ptr, ExpressionRef $value, Type) is symbol<BinaryenStore> is native(&binaryen) {*}
 
 our package Const {
-    our ExpressionRef sub FromInt32(ModuleRef, int32) is symbol<BinaryenConstFromInt32> is native(&binaryen-constants) {*}
-    our ExpressionRef sub FromInt64(ModuleRef, int64) is symbol<BinaryenConstFromInt64> is native(&binaryen-constants) {*}
-    our ExpressionRef sub FromFloat32(ModuleRef, num32) is symbol<BinaryenConstFromFloat32> is native(&binaryen-constants) {*}
-    our ExpressionRef sub FromFloat64(ModuleRef, num64) is symbol<BinaryenConstFromFloat64> is native(&binaryen-constants) {*}
-    our ExpressionRef sub FromFloat32Bits(ModuleRef, num32) is symbol<BinaryenConstFromFloat32Bits> is native(&binaryen-constants) {*}
-    our ExpressionRef sub FromFloat64Bits(ModuleRef, num64) is symbol<BinaryenConstFromFloat64Bits> is native(&binaryen-constants) {*}
+    our ExpressionRef sub FromInt32(ModuleRef, int32) is symbol<BinaryenConstFromInt32> is native(&binaryen-utils) {*}
+    our ExpressionRef sub FromInt64(ModuleRef, int64) is symbol<BinaryenConstFromInt64> is native(&binaryen-utils) {*}
+    our ExpressionRef sub FromFloat32(ModuleRef, num32) is symbol<BinaryenConstFromFloat32> is native(&binaryen-utils) {*}
+    our ExpressionRef sub FromFloat64(ModuleRef, num64) is symbol<BinaryenConstFromFloat64> is native(&binaryen-utils) {*}
+    our ExpressionRef sub FromFloat32Bits(ModuleRef, num32) is symbol<BinaryenConstFromFloat32Bits> is native(&binaryen-utils) {*}
+    our ExpressionRef sub FromFloat64Bits(ModuleRef, num64) is symbol<BinaryenConstFromFloat64Bits> is native(&binaryen-utils) {*}
 }
 
 our ExpressionRef sub Unary(ModuleRef, Op, ExpressionRef $value) is symbol<BinaryenUnary> is native(&binaryen) {*}
@@ -234,9 +234,7 @@ our sub ModuleAutoDrop(ModuleRef) is symbol<BinaryenModuleAutoDrop> is native(&b
 # for some reason I can't re-use the exact same identifier
 our constant size-t := uint32;
 
-our size-t sub ModuleWrite(ModuleRef, Str $output, size-t $outputSize) is symbol<BinaryenModuleWrite> is native(&binaryen) {*}
-
-our ModuleRef sub ModuleRead(buf8 $input, size-t $inputSize) is symbol<BinaryenModuleRead> is native(&binaryen) {*}
+our sub ModuleWriteHex(ModuleRef, size-t) is symbol<BinaryenModuleWriteHex> is native(&binaryen-utils) {*}
 
 our sub ModuleInterpret(ModuleRef) is symbol<BinaryenModuleInterpret> is native(&binaryen) {*}
 
